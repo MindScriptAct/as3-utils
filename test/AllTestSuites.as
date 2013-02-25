@@ -1,7 +1,5 @@
 package {
-import unit.xmlHelper.XmlHelperBasicTests;
-import unit.xmlHelper.XmlHelperCompositeTests;
-import unit.xmlHelper.XmlHelperVectorTests;
+import unit.xmlHelper.*;
 
 /**
  * COMMENT
@@ -23,6 +21,7 @@ public class AllTestSuites {
 
 	//*/
 
+	public var xmlHelperBasicTraceTests:XmlHelperBasicTraceTests;
 }
 
 }

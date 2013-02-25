@@ -201,6 +201,145 @@ public class XmlHelper {
 			}
 		}
 	}
+	
+	//----------------------------------
+	//     debug
+	//----------------------------------
+	
+	static public function traceObjFromXml(fillClass:Class, xmlFile:XML):String {
+		
+		var retVal:String = "Chacking " + fillClass + " with given xml...";
+		trace(retVal);
+		
+		var testObj:Object = parseXml(fillClass, xmlFile);
+		
+		var traceRegisty:TraceRegisty = new TraceRegisty();
+		
+		analizeXml(testObj, fillClass, xmlFile, traceRegisty);
+		
+		var misingVars:String = traceRegisty.traceMissingVars();
+		retVal += "\n" + misingVars;
+		
+		if (misingVars != "") {
+			trace("\n" + misingVars);
+		} else {
+			trace("... all is good.\n");
+		}
+		
+		return retVal;
+	}
+	
+	static private function analizeXml(testObj:Object, fillClass:Class, xmlFile:XML, traceRegisty:TraceRegisty):void {
+		var objectParsed:Boolean;
+		var name:String;
+		
+		var attribList:XMLList = xmlFile.attributes();
+		var attribCount:int = attribList.length();
+		for (var i:int = 0; i < attribCount; i++) {
+			var attribXml:XML = attribList[i];
+			name = attribXml.localName();
+			try {
+				objectParsed = testObj[name] != null;
+			} catch (error:Error) {
+				objectParsed = false;
+			}
+			if (!objectParsed) {
+				traceRegisty.addMisigVarible(fillClass, name, guessType(attribXml));
+			}
+		}
+		
+		var childList:XMLList = xmlFile.children();
+		var childCount:int = childList.length();
+		for (var j:int = 0; j < childCount; j++) {
+			var childXml:XML = childList[j];
+			name = childXml.localName();
+			try {
+				objectParsed = testObj[name] != null;
+				
+				var objClass:Class = Object(testObj[name]).constructor;
+				
+				analizeXml(testObj[name], objClass, childXml, traceRegisty);
+				
+			} catch (error:Error) {
+				objectParsed = false;
+			}
+			if (!objectParsed) {
+				traceRegisty.addMisigVarible(fillClass, name, guessType(childXml));
+			}
+		}
+	
+	}
+	
+	static private function guessType(dataXml:XML):String {
+		var retVal:String = "Object";
+		
+		var attributes:XMLList = dataXml.attributes();
+		
+		if (!dataXml.hasComplexContent() && attributes.length() == 0) {
+			retVal = "String";
+			
+			var data:String = dataXml.toString();
+			
+			// int
+			var intTest:int = int(data);
+			if (data == String(intTest)) {
+				retVal = "int";
+			} else {
+				// Number
+				var numberTest:Number = Number(data);
+				if (data == String(numberTest)) {
+					retVal = "Number";
+				}
+			}
+			
+			// Boolean
+			if (data == "true" || data == "false" || data == "TRUE" || data == "FALSE") {
+				retVal = "Boolean";
+			}
+			
+		}
+		
+		// Vector ???
+		
+		// Object ???
+		
+		return retVal;
+	}
 
 }
 }
+
+import flash.utils.Dictionary;
+
+class TraceRegisty {
+	
+	private var objectRegisty:Dictionary = new Dictionary();
+	
+	public function addMisigVarible(objClass:Class, name:String, type:String):void {
+		var objectClasses:Vector.<String> = objectRegisty[String(objClass)];
+		if (!objectClasses) {
+			objectClasses = new Vector.<String>();
+			objectRegisty[String(objClass)] = objectClasses;
+		}
+		objectClasses.push("\t" + "public var " + name + ":" + type + ";");
+	}
+	
+	public function traceMissingVars():String {
+		var retVal:String = "";
+		
+		for (var objClass:String in objectRegisty) {
+			var objectClasses:Vector.<String> = objectRegisty[objClass];
+			
+			retVal += " !!! Class " + objClass + " has these missing variables:\n\n";
+			
+			for (var i:int = 0; i < objectClasses.length; i++) {
+				retVal += objectClasses[i] + "\n";
+			}
+			
+			retVal += "\n";
+		}
+		
+		return retVal;
+	}
+}
+

@@ -1,5 +1,6 @@
 package unit.xmlHelper.testObj.complex {
 import unit.xmlHelper.testObj.*;
+import unit.xmlHelper.testObj.basic.*;
 import unit.xmlHelper.testObj.vectors.*;
 
 /**

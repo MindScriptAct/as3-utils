@@ -1,4 +1,4 @@
-package unit.xmlHelper.testObj {
+package unit.xmlHelper.testObj.basic {
 
 public class VarNumberObj {
 	
