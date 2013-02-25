@@ -1,4 +1,4 @@
-package unit.xmlHelper.testObj.complex {
+package unit.xmlHelper.testObj.vectors {
 	
 /**
  * COMMENT

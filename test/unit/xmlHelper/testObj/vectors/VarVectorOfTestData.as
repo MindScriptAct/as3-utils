@@ -1,5 +1,6 @@
-package unit.xmlHelper.testObj.complex {
-	
+package unit.xmlHelper.testObj.vectors {
+import unit.xmlHelper.testObj.complex.VarTestData;
+
 /**
  * COMMENT
  * @author rBanevicius
@@ -7,6 +8,6 @@ package unit.xmlHelper.testObj.complex {
 public class VarVectorOfTestData {
 	
 	public var varVectOfTestData:Vector.<VarTestData>;
-	
+
 }
 }
