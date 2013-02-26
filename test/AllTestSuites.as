@@ -11,7 +11,7 @@ import unit.xmlHelper.*;
 
 public class AllTestSuites {
 	
-	//*
+	/*
 	
 	public var xmlHelperBasicTests:XmlHelperBasicTests;
 	

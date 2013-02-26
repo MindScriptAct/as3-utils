@@ -2,6 +2,7 @@ package mindscriptact.utils.xml {
 import flash.utils.describeType;
 import flash.utils.Dictionary;
 import flash.utils.getDefinitionByName;
+import unit.xmlHelper.testObj.basic.VarBlankObj;
 
 /**
  * TODO:CLASS COMMENT
@@ -41,10 +42,10 @@ public class XmlHelper {
 		var subList:XMLList;
 		
 		var classDescription:XML = describeType(fillObject.constructor);
-		
 		var variableList:XMLList = classDescription.factory.*.(name() == "variable" || name() == "accessor");
 		
-		for (var i:int = 0; i < variableList.length(); i++) {
+		var variableCount:int = variableList.length();
+		for (var i:int = 0; i < variableCount; i++) {
 			
 			var variableType:String = variableList[i].@type;
 			
@@ -299,11 +300,127 @@ public class XmlHelper {
 			
 		}
 		
-		// Vector ???
-		
-		// Object ???
-		
 		return retVal;
+	}
+	
+	//----------------------------------
+	//     fill xml from object, and trace it.
+	//----------------------------------
+	
+	static public function traceXmlFromObj(data:Object, xml:XML, isRoot:Boolean = true):XML {
+		var attribList:XMLList;
+		var mainChild:XML;
+		var child:XML;
+		var childList:XMLList;
+		var xmlNode:XML;
+		// TODO : rename to retVal.
+		var xmlFile:XML = new XML(xml);
+		
+		var dataClass:Class = data.constructor;
+		
+		var classDescription:XML = describeType(dataClass);
+		var variableList:XMLList = classDescription.factory.*.(name() == "variable" || name() == "accessor");
+		
+		var variableCount:int = variableList.length();
+		for (var i:int = 0; i < variableCount; i++) {
+			
+			var variableType:String = variableList[i].@type;
+			var variableName:String = variableList[i].@name;
+			var variableValue:Object = data[variableList[i].@name];
+			
+			// check if its vertor
+			if (variableType.indexOf("__AS3__.vec::Vector") != -1) {
+				
+					// init vector
+					//memberValue = fillObject[variableList[i].@name];
+					//if (memberValue == null) {
+					//var vectClass:Class = getDefinitionByName(variableType) as Class;
+					//memberValue = new vectClass();
+					//}
+					//
+					// get vector element type.
+					//var childSplitArr:Array = variableType.split("<");
+					//var childType:String = childSplitArr[childSplitArr.length - 1].split(">")[0];
+					//var clildClass:Class = getDefinitionByName(childType) as Class;
+					//
+					// get elements with same name as vector var name.
+					//var vectorHolderList:XMLList = xmlFile[variableList[i].@name];
+					//
+					// if element is single, without arguments, and with children - treat it as main node, and treat childs as items.
+					//if (vectorHolderList.length() == 1) {
+					//var vectorItimList:XMLList = vectorHolderList[0].children();
+					//for (var j:int = 0; j < vectorItimList.length(); j++) {
+					//var childObject:Object = parseXml(clildClass, vectorItimList[j]);
+					//memberValue.push(childObject);
+					//}
+					//} else if (vectorHolderList.length() > 1) { // treat every child as item of vector.
+					//treat nodes AS object elements.
+					//for (var k:int = 0; k < vectorHolderList.length(); k++) {
+					//childObject = new clildClass();
+					//parseXmlToObject(childObject, vectorHolderList[k])
+					//memberValue.push(childObject);
+					//}
+					//}
+				
+			} else if (variableType == "int" || variableType == "uint" || variableType == "Number" || variableType == "String" || variableType == "Boolean") {
+				attribList = xmlFile["@" + variableList[i].@name];
+				if (attribList.length() == 1) {
+					xmlFile["@" + variableList[i].@name] = variableValue;
+				} else {
+					childList = xmlFile[variableList[i].@name];
+					if (childList.length() == 1) {
+						child = childList[0];
+						child.appendChild(variableValue);
+					} else {
+						if (isRoot) {
+							xmlFile[variableList[i].@name] = variableValue;
+						} else {
+							xmlFile["@" + variableList[i].@name] = variableValue;
+						}
+					}
+				}
+				
+			} else if (variableType == "flash.utils::Dictionary" || variableType == "Object") {
+				var mainChilds:XMLList = xmlFile[variableList[i].@name];
+				if (mainChilds.length() == 0) {
+					xmlFile[variableList[i].@name] = "";
+					mainChild = xmlFile[variableList[i].@name][0];
+				} else if (mainChilds.length() == 1) {
+					mainChild = mainChilds[0];
+				} else {
+					throw Error("Dictionary tag [" + variableList[i].@name + "] should be used only once.");
+				}
+				
+				for (var itemName:String in variableValue) {
+					
+					attribList = mainChild["@" + itemName];
+					if (attribList.length() == 1) {
+						mainChild["@" + itemName] = variableValue[itemName];
+					} else {
+						mainChild[itemName] = variableValue[itemName];
+					}
+				}
+				
+			} else {
+				//trace("variableType : " + variableType);
+				//var objectClass:Class = getDefinitionByName(variableType) as Class;
+				//if (objectClass) {
+				//memberValue = new objectClass();
+				//var objectNodes:XMLList = xmlFile[variableList[i].@name];
+				//if (objectNodes.length() > 0) {
+				//parseXmlToObject(memberValue, objectNodes[0]);
+				//}
+				//} else {
+				//throw Error("cant handle this type: " + variableType);
+				//}
+				
+			}
+			
+		}
+		
+		trace("Data object " + data + " converts to XML :\n", xmlFile.toString());
+		
+		return xmlFile;
 	}
 
 }
