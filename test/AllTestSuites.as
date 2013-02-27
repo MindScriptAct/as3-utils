@@ -25,7 +25,7 @@ public class AllTestSuites {
 	
 	//*/
 	
-	//public var xmlHelperCompositeTraceTests:XmlHelperCompositeTraceTests;
+	public var xmlHelperCompositeTraceTests:XmlHelperCompositeTraceTests;
 }
 
 }

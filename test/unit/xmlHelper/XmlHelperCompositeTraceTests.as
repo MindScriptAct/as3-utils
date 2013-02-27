@@ -1,6 +1,7 @@
 package unit.xmlHelper {
 import flexunit.framework.*;
 import mindscriptact.utils.xml.*;
+import unit.xmlHelper.testObj.complexTrace.*;
 import unit.xmlHelper.testObj.dataTrace.*;
 import unit.xmlHelper.testObj.vectorsTrace.*;
 
@@ -21,40 +22,25 @@ public class XmlHelperCompositeTraceTests {
 	}
 	
 	//----------------------------------
-	//     Vector of objects
+	//     complex object with int
 	//----------------------------------
 	
 	[Test(expects="Error")]
 	
-	public function xmlHelper_traceXmlFromVectorVectorDublicatedVar_fails():void {
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithIntDoubleMainTag_fails():void {
 		
-		var xmlIn:XML = 
+		var xmlIn:XML =
 			<data>
-				<varVectOfTestData>
-				</varVectOfTestData>
-				<varVectOfTestData>
-				</varVectOfTestData>				
+				<testIntMain/>
+				<testIntMain/>
 			</data>;
 		
-		var data:VarVectorOfDataTestData = new VarVectorOfDataTestData();
-		
-		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
-	
-	}
-	
-	[Test(expects="Error")]
-	
-	public function xmlHelper_traceXmlFromVectorVectorItemTagDifers_fails():void {
-		
-		var xmlIn:XML = 
+		var xmlResult:XML =
 			<data>
-				<varVectOfTestData>
-					<item/>
-					<testItem/>
-				</varVectOfTestData>			
+				<testIntMain testInt="12345"/>
 			</data>;
 		
-		var data:VarVectorOfDataTestData = new VarVectorOfDataTestData();
+		var data:VarCompositeIntObj = new VarCompositeIntObj();
 		
 		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
 	
@@ -62,20 +48,18 @@ public class XmlHelperCompositeTraceTests {
 	
 	[Test]
 	
-	public function xmlHelper_traceXmlFromVectorVectorVar_ok():void {
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithInt_ok():void {
 		
-		var xmlIn:XML = 
+		var xmlIn:XML =
 			<data>
 			</data>;
 		
-		var xmlResult:XML = 
+		var xmlResult:XML =
 			<data>
-				<varVectOfTestData>
-					<item testString="abc123"/>
-				</varVectOfTestData>
+				<testIntMain testInt="1234"/>
 			</data>;
 		
-		var data:VarVectorOfDataTestData = new VarVectorOfDataTestData();
+		var data:VarCompositeIntObj = new VarCompositeIntObj();
 		
 		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
 		
@@ -85,22 +69,19 @@ public class XmlHelperCompositeTraceTests {
 	
 	[Test]
 	
-	public function xmlHelper_traceXmlFromVectorVectorSingeVar_ok():void {
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithIntMainTag_ok():void {
 		
-		var xmlIn:XML = 
+		var xmlIn:XML =
 			<data>
-				<varVectOfTestData>
-				</varVectOfTestData>
+				<testIntMain/>
 			</data>;
 		
-		var xmlResult:XML = 
+		var xmlResult:XML =
 			<data>
-				<varVectOfTestData>
-					<item testString="abc123"/>
-				</varVectOfTestData>
+				<testIntMain testInt="1234"/>
 			</data>;
 		
-		var data:VarVectorOfDataTestData = new VarVectorOfDataTestData();
+		var data:VarCompositeIntObj = new VarCompositeIntObj();
 		
 		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
 		
@@ -110,53 +91,19 @@ public class XmlHelperCompositeTraceTests {
 	
 	[Test]
 	
-	public function xmlHelper_traceXmlFromVectorVectorSingeVarWithSubnodes_ok():void {
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithIntMainTagAndAttribute_ok():void {
 		
-		var xmlIn:XML = 
+		var xmlIn:XML =
 			<data>
-				<varVectOfTestData>
-					<testItem/>
-				</varVectOfTestData>
+				<testIntMain testInt=""/>
 			</data>;
 		
-		var xmlResult:XML = 
+		var xmlResult:XML =
 			<data>
-				<varVectOfTestData>
-					<testItem testString="abc123"/>
-				</varVectOfTestData>
+				<testIntMain testInt="1234"/>
 			</data>;
 		
-		var data:VarVectorOfDataTestData = new VarVectorOfDataTestData();
-		
-		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
-		
-		Assert.assertEquals("Tracing xml failed. Vector is not traced corectly.", xmlResult, xmlOut);
-	
-	}
-	
-	[Test]
-	
-	public function xmlHelper_traceXmlFromVectorVectorSingeVarWithAttributes_ok():void {
-		
-		var xmlIn:XML = 
-			<data>
-				<varVectOfTestData>
-					<testItem>
-						<testString></testString>
-					</testItem>
-				</varVectOfTestData>
-			</data>;
-		
-		var xmlResult:XML = 
-			<data>
-				<varVectOfTestData>
-					<testItem>
-						<testString>abc123</testString>
-					</testItem>
-				</varVectOfTestData>
-			</data>;
-		
-		var data:VarVectorOfDataTestData = new VarVectorOfDataTestData();
+		var data:VarCompositeIntObj = new VarCompositeIntObj();
 		
 		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
 		
@@ -165,26 +112,23 @@ public class XmlHelperCompositeTraceTests {
 	}
 	
 	//----------------------------------
-	//     Vector of basic elements
+	//     boolean
 	//----------------------------------
 	
 	[Test]
 	
-	//
-	public function xmlHelper_traceXmlFromVectorVectorWithIntsVar_ok():void {
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithBoolean_ok():void {
 		
-		var xmlIn:XML = 
+		var xmlIn:XML =
 			<data>
 			</data>;
 		
-		var xmlResult:XML = 
+		var xmlResult:XML =
 			<data>
-				<varVectOfInt>
-					<item>12345</item>
-				</varVectOfInt>
+				<testBooleanMain testBoolean="true"/>
 			</data>;
 		
-		var data:VarVectorOfDataInt = new VarVectorOfDataInt();
+		var data:VarCompositeBooleanObj = new VarCompositeBooleanObj();
 		
 		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
 		
@@ -192,24 +136,24 @@ public class XmlHelperCompositeTraceTests {
 	
 	}
 	
+	//----------------------------------
+	//     String
+	//----------------------------------
+	
 	[Test]
 	
-	public function xmlHelper_traceXmlFromVectorVectorWithIntsSingeVar_ok():void {
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithString_ok():void {
 		
 		var xmlIn:XML =
 			<data>
-				<varVectOfInt>
-				</varVectOfInt>
 			</data>;
 		
-		var xmlResult:XML =   
-			<data> 
-				<varVectOfInt>
-					<item>12345</item>
-				</varVectOfInt>
+		var xmlResult:XML =
+			<data>
+				<testStringMain testString="abc123"/>
 			</data>;
 		
-		var data:VarVectorOfDataInt = new VarVectorOfDataInt();
+		var data:VarCompositeStringObj = new VarCompositeStringObj();
 		
 		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
 		
@@ -217,25 +161,86 @@ public class XmlHelperCompositeTraceTests {
 	
 	}
 	
+	//----------------------------------
+	//     Dictionary
+	//----------------------------------
+	
 	[Test]
 	
-	public function xmlHelper_traceXmlFromVectorVectorWithIntsSingeVarWithSubnodes_ok():void {
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithDictionary_ok():void {
 		
 		var xmlIn:XML =
 			<data>
-				<varVectOfInt>
-					<testItem/>
-				</varVectOfInt>
 			</data>;
 		
-		var xmlResult:XML =    
-			<data> 
-				<varVectOfInt>
-					<testItem>12345</testItem>
-				</varVectOfInt>
+		var xmlResult:XML =
+			<data>
+				<testDictionaryMain>
+					<testDictionary>
+						<testData>abc123</testData>
+					</testDictionary>
+				</testDictionaryMain>
 			</data>;
 		
-		var data:VarVectorOfDataInt = new VarVectorOfDataInt();
+		var data:VarCompositeDictionaryObj = new VarCompositeDictionaryObj();
+		
+		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
+		
+		Assert.assertEquals("Tracing xml failed. Vector is not traced corectly.", xmlResult, xmlOut);
+	
+	}
+	
+	//----------------------------------
+	//     Vector of ints
+	//----------------------------------
+	
+	[Test]
+	
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithVectorOfInts_ok():void {
+		
+		var xmlIn:XML =
+			<data>
+			</data>;
+		
+		var xmlResult:XML =
+			<data>
+				<testVectOfIntMain>
+					<varVectOfInts>
+						<item>123456</item>
+					</varVectOfInts>
+				</testVectOfIntMain>
+			</data>;
+		
+		var data:VarCompositeVectorIfIntsObj = new VarCompositeVectorIfIntsObj();
+		
+		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
+		
+		Assert.assertEquals("Tracing xml failed. Vector is not traced corectly.", xmlResult, xmlOut);
+	
+	}
+	
+	//----------------------------------
+	//     Vector of data
+	//----------------------------------
+	
+	[Test]
+	
+	public function xmlHelper_traceXmlFromObjectWithSubobjectWithVectorOfTestData_ok():void {
+		
+		var xmlIn:XML =
+			<data>
+			</data>;
+		
+		var xmlResult:XML =
+			<data>
+				<testVectOfTestDataMain>
+					<varVectOfTestData>
+						<item testString="abc123"/>
+					</varVectOfTestData>
+				</testVectOfTestDataMain>
+			</data>;
+		
+		var data:VarCompositeVectorIfTestDataObj = new VarCompositeVectorIfTestDataObj();
 		
 		var xmlOut:XML = XmlHelper.traceXmlFromObj(data, xmlIn);
 		

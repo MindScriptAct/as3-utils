@@ -5,11 +5,17 @@ import flash.utils.getDefinitionByName;
 import unit.xmlHelper.testObj.basic.VarBlankObj;
 
 /**
- * TODO:CLASS COMMENT
+ * Helper that parse xml data to object, and have functions to generate Class attributes from xml, and generate xml from Object.
  * @author Raimundas Banevicius (raima156@yahoo.com)
  */
 public class XmlHelper {
 	
+	/**
+	 * Creates object for provided class, and fills it with data from xml.
+	 * @param	fillClass	Class of object that holds data of xml file root.
+	 * @param	xmlFile		Xml with data
+	 * @return				OBject with data parsed from xml.
+	 */
 	static public function parseXml(fillClass:Class, xmlFile:XML):Object {
 		var retval:Object = new fillClass();
 		if (fillClass == Boolean) {
@@ -38,6 +44,11 @@ public class XmlHelper {
 		return retval;
 	}
 	
+	/**
+	 * Fills provided object with data from xml.
+	 * @param	fillObject	Object that holds data of xml file root.
+	 * @param	xmlFile		Xml with data
+	 */
 	static public function parseXmlToObject(fillObject:Object, xmlFile:XML):void {
 		var subList:XMLList;
 		
@@ -183,6 +194,12 @@ public class XmlHelper {
 		}
 	}
 	
+	/**
+	 * Function to fill dictionary or object.
+	 * @private
+	 * @param	value
+	 * @param	objXml
+	 */
 	static private function fillObj(value:Object, objXml:XML):void {
 		var dictXmlAttribs:XMLList = objXml.attributes();
 		var attribCount:int = dictXmlAttribs.length();
@@ -207,6 +224,12 @@ public class XmlHelper {
 	//     debug
 	//----------------------------------
 	
+	/**
+	 * Will trace missing orguments in your class, that exists in provided xml.
+	 * @param	fillClass
+	 * @param	xmlFile
+	 * @return
+	 */
 	static public function traceObjFromXml(fillClass:Class, xmlFile:XML):String {
 		
 		var retVal:String = "Chacking " + fillClass + " with given xml...";
@@ -230,6 +253,14 @@ public class XmlHelper {
 		return retVal;
 	}
 	
+	/**
+	 * Recursive funciton to analize xml.
+	 * @private
+	 * @param	testObj
+	 * @param	fillClass
+	 * @param	xmlFile
+	 * @param	traceRegisty
+	 */
 	static private function analizeXml(testObj:Object, fillClass:Class, xmlFile:XML, traceRegisty:TraceRegisty):void {
 		var objectParsed:Boolean;
 		var name:String;
@@ -271,6 +302,12 @@ public class XmlHelper {
 	
 	}
 	
+	/**
+	 * Tries to guess data type.
+	 * @private
+	 * @param	dataXml
+	 * @return
+	 */
 	static private function guessType(dataXml:XML):String {
 		var retVal:String = "Object";
 		
@@ -307,6 +344,13 @@ public class XmlHelper {
 	//     fill xml from object, and trace it.
 	//----------------------------------
 	
+	/**
+	 * Traces XML from provided object data. (parsable by XmlHelper).
+	 * @param	data
+	 * @param	xml
+	 * @param	isRoot
+	 * @return
+	 */
 	static public function traceXmlFromObj(data:Object, xml:XML, isRoot:Boolean = true):XML {
 		// TODO : rename to retVal.
 		var xmlFile:XML = new XML(xml);
@@ -318,6 +362,13 @@ public class XmlHelper {
 		return xmlFile;
 	}
 	
+	/**
+	 * Recursive object parser.
+	 * @private
+	 * @param	data
+	 * @param	xmlFile
+	 * @param	isRoot
+	 */
 	static private function parseObject(data:Object, xmlFile:XML, isRoot:Boolean):void {
 		var itemName:String;
 		var mainChilds:XMLList;
@@ -351,7 +402,7 @@ public class XmlHelper {
 					} else if (mainChilds.length() == 1) {
 						mainChild = mainChilds[0];
 					} else {
-						throw Error("Vector tag [" + variableList[i].@name + "] should be used only once.");
+						throw Error("Vector tag (" + variableList[i].@name + ") should be used only once.");
 					}
 					childList = mainChild.children();
 					
@@ -411,7 +462,7 @@ public class XmlHelper {
 					} else if (mainChilds.length() == 1) {
 						mainChild = mainChilds[0];
 					} else {
-						throw Error("Dictionary tag [" + variableList[i].@name + "] should be used only once.");
+						throw Error(variableType + " tag (" + variableList[i].@name + ") should be used only once.");
 					}
 					for (itemName in variableValue) {
 						attribList = mainChild["@" + itemName];
@@ -423,17 +474,18 @@ public class XmlHelper {
 					}
 					
 				} else {
-					//trace("variableType : " + variableType);
-					//var objectClass:Class = getDefinitionByName(variableType) as Class;
-					//if (objectClass) {
-					//memberValue = new objectClass();
-					//var objectNodes:XMLList = xmlFile[variableList[i].@name];
-					//if (objectNodes.length() > 0) {
-					//parseXmlToObject(memberValue, objectNodes[0]);
-					//}
-					//} else {
-					//throw Error("cant handle this type: " + variableType);
-					//}
+					
+					mainChilds = xmlFile[variableList[i].@name];
+					if (mainChilds.length() == 0) {
+						xmlFile[variableList[i].@name] = "";
+						mainChild = xmlFile[variableList[i].@name][0];
+					} else if (mainChilds.length() == 1) {
+						mainChild = mainChilds[0];
+					} else {
+						throw Error(variableType + " tag (" + variableList[i].@name + ") should be used only once.");
+					}
+					
+					parseObject(variableValue, mainChild, false);
 					
 				}
 			}
@@ -450,6 +502,9 @@ public class XmlHelper {
 
 import flash.utils.Dictionary;
 
+/**
+ * Object to keep info about missing class arguments.
+ */
 class TraceRegisty {
 	
 	private var objectRegisty:Dictionary = new Dictionary();
