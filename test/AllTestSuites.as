@@ -11,17 +11,21 @@ import unit.xmlHelper.*;
 
 public class AllTestSuites {
 	
-	/*
+	///*
 	
 	public var xmlHelperBasicTests:XmlHelperBasicTests;
 	
 	public var xmlHelperVectorTests:XmlHelperVectorTests;
 	
 	public var xmlHelperCompositeTests:XmlHelperCompositeTests;
-
-	//*/
-
+	
 	public var xmlHelperBasicTraceTests:XmlHelperBasicTraceTests;
+	
+	public var xmlHelperVectorTraceTests:XmlHelperVectorTraceTests;
+	
+	//*/
+	
+	//public var xmlHelperCompositeTraceTests:XmlHelperCompositeTraceTests;
 }
 
 }
