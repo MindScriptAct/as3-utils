@@ -58,7 +58,9 @@ public class XmlHelper {
 		var variableCount:int = variableList.length();
 		for (var i:int = 0; i < variableCount; i++) {
 			
-			var variableType:String = variableList[i].@type;
+			var variable:XML = variableList[i];
+			
+			var variableType:String = variable.@type;
 			
 			var memberValue:Object = null;
 			
@@ -66,7 +68,7 @@ public class XmlHelper {
 			if (variableType.indexOf("__AS3__.vec::Vector") != -1) {
 				
 				// init vector
-				memberValue = fillObject[variableList[i].@name];
+				memberValue = fillObject[variable.@name];
 				if (memberValue == null) {
 					var vectClass:Class = getDefinitionByName(variableType) as Class;
 					memberValue = new vectClass();
@@ -78,7 +80,7 @@ public class XmlHelper {
 				var clildClass:Class = getDefinitionByName(childType) as Class;
 				
 				// get elements with same name as vector var name.
-				var vectorHolderList:XMLList = xmlFile[variableList[i].@name];
+				var vectorHolderList:XMLList = xmlFile[variable.@name];
 				
 				// if element is single, without arguments, and with children - treat it as main node, and treat childs as items.
 				if (vectorHolderList.length() == 1) {
@@ -98,11 +100,11 @@ public class XmlHelper {
 				
 			} else if (variableType == "Boolean") {
 				memberValue = false;
-				var booleanVar:String = String(xmlFile["@" + variableList[i].@name]);
+				var booleanVar:String = String(xmlFile["@" + variable.@name]);
 				if (booleanVar == "true" || booleanVar == "TRUE" || booleanVar == "1") {
 					memberValue = true;
 				} else {
-					subList = xmlFile[variableList[i].@name];
+					subList = xmlFile[variable.@name];
 					if (subList.length() == 1) {
 						booleanVar = subList[0].toString();
 						if (booleanVar == "true" || booleanVar == "TRUE" || booleanVar == "1") {
@@ -112,36 +114,36 @@ public class XmlHelper {
 				}
 				
 			} else if (variableType == "int") {
-				memberValue = int(xmlFile["@" + variableList[i].@name]);
+				memberValue = int(xmlFile["@" + variable.@name]);
 				if (memberValue == 0) {
-					subList = xmlFile[variableList[i].@name];
+					subList = xmlFile[variable.@name];
 					if (subList.length() == 1) {
 						memberValue = int(subList[0].toString());
 					}
 				}
 				
 			} else if (variableType == "uint") {
-				memberValue = uint(xmlFile["@" + variableList[i].@name]);
+				memberValue = uint(xmlFile["@" + variable.@name]);
 				if (memberValue == 0) {
-					subList = xmlFile[variableList[i].@name];
+					subList = xmlFile[variable.@name];
 					if (subList.length() == 1) {
 						memberValue = uint(subList[0].toString());
 					}
 				}
 				
 			} else if (variableType == "Number") {
-				memberValue = Number(xmlFile["@" + variableList[i].@name]);
+				memberValue = Number(xmlFile["@" + variable.@name]);
 				if (memberValue == 0) {
-					subList = xmlFile[variableList[i].@name];
+					subList = xmlFile[variable.@name];
 					if (subList.length() == 1) {
 						memberValue = Number(subList[0].toString());
 					}
 				}
 				
 			} else if (variableType == "String") {
-				memberValue = String(xmlFile["@" + variableList[i].@name]);
+				memberValue = String(xmlFile["@" + variable.@name]);
 				if (memberValue == "") {
-					subList = xmlFile[variableList[i].@name];
+					subList = xmlFile[variable.@name];
 					if (subList.length() == 1) {
 						memberValue = subList[0].toString();
 					}
@@ -150,7 +152,7 @@ public class XmlHelper {
 			} else if (variableType == "flash.utils::Dictionary" || variableType == "Object") {
 				
 				// init object
-				memberValue = fillObject[variableList[i].@name];
+				memberValue = fillObject[variable.@name];
 				if (memberValue == null) {
 					if (variableType == "Object") {
 						memberValue = new Object();
@@ -159,7 +161,7 @@ public class XmlHelper {
 					}
 				}
 				// get dictionary tag
-				var dictList:XMLList = xmlFile[variableList[i].@name];
+				var dictList:XMLList = xmlFile[variable.@name];
 				
 				var dictTagCount:int = dictList.length();
 				if (dictTagCount == 1) {
@@ -171,7 +173,7 @@ public class XmlHelper {
 				} else if (dictTagCount == 0) {
 					// 
 				} else if (dictTagCount > 1) {
-					throw Error("You have more then one tag for dictionary with var name:" + variableList[i].@name + " Please use only one.");
+					throw Error("You have more then one tag for dictionary with var name:" + variable.@name + " Please use only one.");
 				}
 				
 			} else {
@@ -179,7 +181,7 @@ public class XmlHelper {
 				var objectClass:Class = getDefinitionByName(variableType) as Class;
 				if (objectClass) {
 					memberValue = new objectClass();
-					var objectNodes:XMLList = xmlFile[variableList[i].@name];
+					var objectNodes:XMLList = xmlFile[variable.@name];
 					if (objectNodes.length() > 0) {
 						parseXmlToObject(memberValue, objectNodes[0]);
 					}
@@ -189,7 +191,7 @@ public class XmlHelper {
 				
 			}
 			
-			fillObject[variableList[i].@name] = memberValue;
+			fillObject[variable.@name] = memberValue;
 			
 		}
 	}
@@ -225,7 +227,7 @@ public class XmlHelper {
 	//----------------------------------
 	
 	/**
-	 * Will trace missing orguments in your class, that exists in provided xml.
+	 * Will trace missing arguments in your class, that exists in provided xml.
 	 * @param	fillClass
 	 * @param	xmlFile
 	 * @return
@@ -351,9 +353,15 @@ public class XmlHelper {
 	 * @param	isRoot
 	 * @return
 	 */
-	static public function traceXmlFromObj(data:Object, xml:XML, isRoot:Boolean = true):XML {
+	static public function traceXmlFromObj(data:Object, xml:XML = null, isRoot:Boolean = true):XML {
 		// TODO : rename to retVal.
-		var xmlFile:XML = new XML(xml);
+		
+		var xmlFile:XML;
+		if (xml) {
+			xmlFile = new XML(xml);
+		} else {
+			xmlFile = new XML("<data/>");
+		}
 		
 		parseObject(data, xmlFile, isRoot);
 		
@@ -379,120 +387,128 @@ public class XmlHelper {
 		var childList:XMLList;
 		var xmlNode:XML;
 		
-		var dataClass:Class = data.constructor;
-		
-		var classDescription:XML = describeType(dataClass);
-		var variableList:XMLList = classDescription.factory.*.(name() == "variable" || name() == "accessor");
-		
-		var variableCount:int = variableList.length();
-		if (variableCount) {
+		if (data) {
 			
-			for (var i:int = 0; i < variableCount; i++) {
+			var dataClass:Class = data.constructor;
+			
+			var classDescription:XML = describeType(dataClass);
+			var variableList:XMLList = classDescription.factory.*.(name() == "variable" || name() == "accessor");
+			
+			var variableCount:int = variableList.length();
+			if (variableCount) {
 				
-				var variableType:String = variableList[i].@type;
-				var variableName:String = variableList[i].@name;
-				var variableValue:Object = data[variableList[i].@name];
-				
-				// check if its vertor
-				if (variableType.indexOf("__AS3__.vec::Vector") != -1) {
-					mainChilds = xmlFile[variableList[i].@name];
-					if (mainChilds.length() == 0) {
-						xmlFile[variableList[i].@name] = "";
-						mainChild = xmlFile[variableList[i].@name][0];
-					} else if (mainChilds.length() == 1) {
-						mainChild = mainChilds[0];
-					} else {
-						throw Error("Vector tag (" + variableList[i].@name + ") should be used only once.");
-					}
-					childList = mainChild.children();
+				for (var i:int = 0; i < variableCount; i++) {
 					
-					// check item names.
-					var childCount:int = childList.length();
-					var vectItemName:String;
-					for (var k:int = 0; k < childCount; k++) {
-						itemName = (childList[k] as XML).localName() as String
-						if (vectItemName) {
-							if (vectItemName != itemName) {
-								throw Error("Vector (" + variableList[i].@name + ") items should have same item names. 2 diferent names found : " + vectItemName + ", " + itemName);
-							}
-						} else {
-							vectItemName = itemName;
-						}
-					}
-					if (!vectItemName) {
-						vectItemName = "item";
-					}
+					var variable:XML = variableList[i];
 					
-					var itemLenght:int = variableValue.length;
-					for (var j:int = 0; j < itemLenght; j++) {
-						var vectorItem:Object = variableValue[j];
+					if (variable.@access != "writeonly") {
 						
-						if (j < childCount) {
-							child = childList[j];
-						} else {
-							child = new XML("<" + vectItemName + "/>");
-							mainChild.appendChild(child);
-						}
-						parseObject(vectorItem, child, false);
-					}
-					
-				} else if (variableType == "int" || variableType == "uint" || variableType == "Number" || variableType == "String" || variableType == "Boolean") {
-					attribList = xmlFile["@" + variableList[i].@name];
-					if (attribList.length() == 1) {
-						xmlFile["@" + variableList[i].@name] = variableValue;
-					} else {
-						childList = xmlFile[variableList[i].@name];
-						if (childList.length() == 1) {
-							child = childList[0];
-							child.appendChild(variableValue);
-						} else {
-							if (isRoot) {
-								xmlFile[variableList[i].@name] = variableValue;
+						var variableType:String = variable.@type;
+						var variableName:String = variable.@name;
+						var variableValue:Object = data[variable.@name];
+						
+						// check if its vertor
+						if (variableType.indexOf("__AS3__.vec::Vector") != -1) {
+							mainChilds = xmlFile[variable.@name];
+							if (mainChilds.length() == 0) {
+								xmlFile[variable.@name] = "";
+								mainChild = xmlFile[variable.@name][0];
+							} else if (mainChilds.length() == 1) {
+								mainChild = mainChilds[0];
 							} else {
-								xmlFile["@" + variableList[i].@name] = variableValue;
+								throw Error("Vector tag (" + variable.@name + ") should be used only once.");
 							}
-						}
-					}
-					
-				} else if (variableType == "flash.utils::Dictionary" || variableType == "Object") {
-					mainChilds = xmlFile[variableList[i].@name];
-					if (mainChilds.length() == 0) {
-						xmlFile[variableList[i].@name] = "";
-						mainChild = xmlFile[variableList[i].@name][0];
-					} else if (mainChilds.length() == 1) {
-						mainChild = mainChilds[0];
-					} else {
-						throw Error(variableType + " tag (" + variableList[i].@name + ") should be used only once.");
-					}
-					for (itemName in variableValue) {
-						attribList = mainChild["@" + itemName];
-						if (attribList.length() == 1) {
-							mainChild["@" + itemName] = variableValue[itemName];
+							childList = mainChild.children();
+							
+							// check item names.
+							var childCount:int = childList.length();
+							var vectItemName:String;
+							for (var k:int = 0; k < childCount; k++) {
+								itemName = (childList[k] as XML).localName() as String
+								if (vectItemName) {
+									if (vectItemName != itemName) {
+										throw Error("Vector (" + variable.@name + ") items should have same item names. 2 diferent names found : " + vectItemName + ", " + itemName);
+									}
+								} else {
+									vectItemName = itemName;
+								}
+							}
+							if (!vectItemName) {
+								vectItemName = "item";
+							}
+							
+							var itemLenght:int = variableValue.length;
+							for (var j:int = 0; j < itemLenght; j++) {
+								var vectorItem:Object = variableValue[j];
+								
+								if (j < childCount) {
+									child = childList[j];
+								} else {
+									child = new XML("<" + vectItemName + "/>");
+									mainChild.appendChild(child);
+								}
+								parseObject(vectorItem, child, false);
+							}
+							
+						} else if (variableType == "int" || variableType == "uint" || variableType == "Number" || variableType == "String" || variableType == "Boolean") {
+							attribList = xmlFile["@" + variable.@name];
+							if (attribList.length() == 1) {
+								xmlFile["@" + variable.@name] = variableValue;
+							} else {
+								childList = xmlFile[variable.@name];
+								if (childList.length() == 1) {
+									child = childList[0];
+									child.appendChild(variableValue);
+								} else {
+									if (isRoot) {
+										xmlFile[variable.@name] = variableValue;
+									} else {
+										xmlFile["@" + variable.@name] = variableValue;
+									}
+								}
+							}
+							
+						} else if (variableType == "flash.utils::Dictionary" || variableType == "Object") {
+							mainChilds = xmlFile[variable.@name];
+							if (mainChilds.length() == 0) {
+								xmlFile[variable.@name] = "";
+								mainChild = xmlFile[variable.@name][0];
+							} else if (mainChilds.length() == 1) {
+								mainChild = mainChilds[0];
+							} else {
+								throw Error(variableType + " tag (" + variable.@name + ") should be used only once.");
+							}
+							for (itemName in variableValue) {
+								attribList = mainChild["@" + itemName];
+								if (attribList.length() == 1) {
+									mainChild["@" + itemName] = variableValue[itemName];
+								} else {
+									mainChild[itemName] = variableValue[itemName];
+								}
+							}
+							
 						} else {
-							mainChild[itemName] = variableValue[itemName];
+							
+							mainChilds = xmlFile[variable.@name];
+							if (mainChilds.length() == 0) {
+								xmlFile[variable.@name] = "";
+								mainChild = xmlFile[variable.@name][0];
+							} else if (mainChilds.length() == 1) {
+								mainChild = mainChilds[0];
+							} else {
+								throw Error(variableType + " tag (" + variable.@name + ") should be used only once.");
+							}
+							
+							parseObject(variableValue, mainChild, false);
+							
 						}
 					}
-					
-				} else {
-					
-					mainChilds = xmlFile[variableList[i].@name];
-					if (mainChilds.length() == 0) {
-						xmlFile[variableList[i].@name] = "";
-						mainChild = xmlFile[variableList[i].@name][0];
-					} else if (mainChilds.length() == 1) {
-						mainChild = mainChilds[0];
-					} else {
-						throw Error(variableType + " tag (" + variableList[i].@name + ") should be used only once.");
-					}
-					
-					parseObject(variableValue, mainChild, false);
-					
 				}
-			}
-			
-		} else {
-			if (dataClass == int || dataClass == uint || dataClass == Number || dataClass == String || dataClass == Boolean) {
-				xmlFile.appendChild(data);
+				
+			} else {
+				if (dataClass == int || dataClass == uint || dataClass == Number || dataClass == String || dataClass == Boolean) {
+					xmlFile.appendChild(data);
+				}
 			}
 		}
 	}

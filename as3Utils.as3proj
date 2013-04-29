@@ -88,5 +88,7 @@
     <option testMovie="Default" />
   </options>
   <!-- Plugin storage -->
-  <storage />
+  <storage>
+    <entry key="at_enabled"><![CDATA[0]]></entry>
+  </storage>
 </project>

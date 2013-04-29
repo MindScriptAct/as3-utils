@@ -1,8 +1,10 @@
 package {
+import flash.display.MovieClip;
 import flash.display.Sprite;
 import flash.display.Stage;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
+import mindscriptact.utils.xml.XmlHelper;
 import noiseandheat.flexunit.visuallistener.VisualListener;
 import org.flexunit.internals.TraceListener;
 import org.flexunit.runner.FlexUnitCore;
@@ -37,6 +39,13 @@ public class MainTestRunner extends Sprite {
 		addChild(listener);
 		core.addListener(listener);
 		core.run(AllTestSuites);
+		
+		
+		//var movieCl:MovieClip = new MovieClip();
+
+		//XmlHelper.traceXmlFromObj(movieCl);
+		
+		
 	}
 
 }
