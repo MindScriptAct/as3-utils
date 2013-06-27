@@ -1,4 +1,5 @@
 # Build and Release Folders
+bin/
 bin-debug/
 bin-release/
 
@@ -8,3 +9,5 @@ bin-release/
 .settings/
 .project
 /bin/as3Utils.swf
+/.idea
+/as3-utils.iml
