@@ -258,6 +258,42 @@ public class Vect2d {
 	//-----------------------------------
 
 	/**
+	 * Add two vectors, and returns result as new vector.
+	 * @param vect
+	 * @return
+	 */
+	static public function add(vect1:Vect2d, vect2:Vect2d):Vect2d {
+		return new Vect2d(vect1.x + vect2.x, vect1.y + vect2.y);
+	}
+
+	/**
+	 * Subtract one vector from another, and returns result as new vector.
+	 * @param vect
+	 * @return
+	 */
+	static public function sub(vect1:Vect2d, vect2:Vect2d):Vect2d {
+		return new Vect2d(vect1.x - vect2.x, vect1.y - vect2.y);
+	}
+
+	/**
+	 * Multiplies vector(or scales it), and returns result as new wector.
+	 * @param scalar
+	 * @return
+	 */
+	static public function mulScalar(vect:Vect2d, scalar:Number):Vect2d {
+		return new Vect2d(vect.x * scalar, vect.y * scalar);
+	}
+
+
+	/** Rotates provided vector by "rads" radians, and returns as a new vector */
+	static public function rotate(vect:Vect2d, rads:Number):Vect2d {
+		var s:Number = Math.sin(rads);
+		var c:Number = Math.cos(rads);
+
+		return new Vect2d(vect.x * c - vect.y * s, vect.x * s + vect.y * c);
+	}
+
+	/**
 	 * Gets a distance between 2 vectors.
 	 * @param fromVec
 	 * @param toVec
